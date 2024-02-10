@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>LIFFアプリ - 当番表アンケート</title>
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <script>
+        // LIFFの初期化とユーザー認証
+        function initializeLiff() {
+            liff.init({ liffId: "YOUR_LIFF_ID" }) // LIFF IDを設定
+                .then(() => {
+                    if (!liff.isLoggedIn()) {
+                        liff.login();
+                    }
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
+        }
+
+        // アンケート回答の保存（仮実装）
+        function saveAnswer(answer) {
+            console.log("アンケート回答が保存されました：", answer);
+            // ここでデータベースに回答を保存する処理を実装
+        }
+
+        // アンケート回答の送信
+        function submitAnswer() {
+            const answer = { /* 回答データ */ };
+            saveAnswer(answer);
+            alert("アンケートに回答しました。");
+        }
+
+        // 回答結果の確認（仮実装）
+        function checkAnswer() {
+            // ここでユーザーの回答結果をデータベースから取得して表示
+            alert("あなたの回答結果を表示します。");
+        }
+
+        window.onload = function() {
+            initializeLiff();
+        }
+    </script>
+</head>
+<body>
+    <h1>当番表アンケート</h1>
+    <button onclick="submitAnswer()">アンケートに回答する</button>
+    <button onclick="checkAnswer()">回答結果を確認する</button>
+</body>
+</html>
