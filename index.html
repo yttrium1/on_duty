@@ -28,7 +28,7 @@
         button:hover {
             background-color: #0056b3;
         }
-        #response {
+        #response, #bentoStockList {
             margin-top: 20px;
             padding: 10px;
             border: 1px solid #ddd;
@@ -50,6 +50,11 @@
 
         <button type="submit">在庫を更新</button>
     </form>
+
+    <div id="bentoStockList">
+        <h2>現在の在庫一覧</h2>
+        <ul id="bentoStock"></ul>
+    </div>
 
     <!-- レスポンス表示領域 -->
     <div id="response"></div>
@@ -77,11 +82,36 @@
 
                 const data = await response.json();
                 document.getElementById('response').textContent = JSON.stringify(data, null, 2);
-
+                fetchStock(); // 在庫情報を再取得
             } catch (error) {
                 document.getElementById('response').textContent = `エラー: ${error.message}`;
             }
         });
+
+        // 在庫情報の取得と表示
+        async function fetchStock() {
+            const bentoStockElement = document.getElementById('bentoStock');
+            try {
+                const response = await fetch(`${serverUrl}/api/get-status`);
+                if (!response.ok) {
+                    throw new Error(`HTTPエラー: ${response.status}`);
+                }
+
+                const data = await response.json();
+                bentoStockElement.innerHTML = "";
+                data.bentoStock.forEach((bento) => {
+                    const listItem = document.createElement("li");
+                    listItem.textContent = `${bento.bentoName}: ${bento.stock}個`;
+                    bentoStockElement.appendChild(listItem);
+                });
+            } catch (error) {
+                console.error("在庫情報の取得エラー:", error);
+                bentoStockElement.innerHTML = "<li>在庫情報を取得できません。</li>";
+            }
+        }
+
+        // 初期化とデータ取得
+        fetchStock();
     </script>
 </body>
 </html>
