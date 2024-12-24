@@ -4,19 +4,59 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>弁当在庫管理</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+            line-height: 1.5;
+        }
+        h1 {
+            color: #333;
+        }
+        form, button {
+            margin-top: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #response {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+            white-space: pre-wrap;
+        }
+    </style>
 </head>
 <body>
     <h1>在庫管理画面</h1>
+    <!-- 在庫更新フォーム -->
     <form id="setStockForm">
         <label for="newStock">新しい在庫数:</label>
         <input type="number" id="newStock" name="newStock" required />
         <button type="submit">在庫を更新</button>
     </form>
+
+    <!-- 履歴クリアボタン -->
+    <button id="clearLogsBtn">履歴をクリア</button>
+
+    <!-- レスポンス表示領域 -->
     <div id="response"></div>
 
     <script>
         const serverUrl = 'https://688eca87-9817-447e-ac73-bfe4df7d0c85-00-2es7no9v6pfu4.sisko.replit.dev'; // あなたのReplit URLに置き換えてください
 
+        // 在庫更新処理
         document.getElementById('setStockForm').addEventListener('submit', async (event) => {
             event.preventDefault();
             const newStock = document.getElementById('newStock').value;
@@ -29,6 +69,29 @@
                     },
                     body: JSON.stringify({ newStock: Number(newStock) }),
                 });
+
+                const data = await response.json();
+                document.getElementById('response').textContent = JSON.stringify(data, null, 2);
+
+            } catch (error) {
+                document.getElementById('response').textContent = `エラー: ${error.message}`;
+            }
+        });
+
+        // 履歴クリア処理
+        document.getElementById('clearLogsBtn').addEventListener('click', async () => {
+            if (!confirm('本当に履歴をクリアしますか？')) {
+                return; // キャンセルされた場合
+            }
+
+            try {
+                const response = await fetch(`${serverUrl}/api/clear-logs`, {
+                    method: 'POST',
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTPエラー: ${response.status}`);
+                }
 
                 const data = await response.json();
                 document.getElementById('response').textContent = JSON.stringify(data, null, 2);
