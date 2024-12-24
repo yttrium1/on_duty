@@ -42,13 +42,14 @@
     <h1>在庫管理画面</h1>
     <!-- 在庫更新フォーム -->
     <form id="setStockForm">
-        <label for="newStock">新しい在庫数:</label>
+        <label for="bentoName">弁当名:</label>
+        <input type="text" id="bentoName" name="bentoName" required />
+
+        <label for="newStock">在庫数:</label>
         <input type="number" id="newStock" name="newStock" required />
+
         <button type="submit">在庫を更新</button>
     </form>
-
-    <!-- 履歴クリアボタン -->
-    <button id="clearLogsBtn">履歴をクリア</button>
 
     <!-- レスポンス表示領域 -->
     <div id="response"></div>
@@ -59,6 +60,7 @@
         // 在庫更新処理
         document.getElementById('setStockForm').addEventListener('submit', async (event) => {
             event.preventDefault();
+            const bentoName = document.getElementById('bentoName').value;
             const newStock = document.getElementById('newStock').value;
 
             try {
@@ -67,31 +69,11 @@
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ newStock: Number(newStock) }),
+                    body: JSON.stringify({
+                        bentoName: bentoName,
+                        newStock: Number(newStock),
+                    }),
                 });
-
-                const data = await response.json();
-                document.getElementById('response').textContent = JSON.stringify(data, null, 2);
-
-            } catch (error) {
-                document.getElementById('response').textContent = `エラー: ${error.message}`;
-            }
-        });
-
-        // 履歴クリア処理
-        document.getElementById('clearLogsBtn').addEventListener('click', async () => {
-            if (!confirm('本当に履歴をクリアしますか？')) {
-                return; // キャンセルされた場合
-            }
-
-            try {
-                const response = await fetch(`${serverUrl}/api/clear-logs`, {
-                    method: 'POST',
-                });
-
-                if (!response.ok) {
-                    throw new Error(`HTTPエラー: ${response.status}`);
-                }
 
                 const data = await response.json();
                 document.getElementById('response').textContent = JSON.stringify(data, null, 2);
