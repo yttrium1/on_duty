@@ -1,68 +1,49 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>弁当在庫管理</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
-            padding: 0;
-            line-height: 1.5;
         }
-        h1 {
-            color: #333;
-        }
-        form, button {
+        form {
             margin-top: 20px;
         }
         button {
             padding: 10px 20px;
             background-color: #007BFF;
-            color: #fff;
+            color: white;
             border: none;
-            border-radius: 4px;
             cursor: pointer;
         }
         button:hover {
             background-color: #0056b3;
         }
-        #response, #bentoStockList {
+        #response {
             margin-top: 20px;
             padding: 10px;
-            border: 1px solid #ddd;
             background-color: #f9f9f9;
-            border-radius: 4px;
-            white-space: pre-wrap;
+            border: 1px solid #ddd;
         }
     </style>
 </head>
 <body>
-    <h1>在庫管理画面</h1>
-    <!-- 在庫更新フォーム -->
+    <h1>弁当在庫管理</h1>
     <form id="setStockForm">
         <label for="bentoName">弁当名:</label>
-        <input type="text" id="bentoName" name="bentoName" required />
-
+        <input type="text" id="bentoName" required>
         <label for="newStock">在庫数:</label>
-        <input type="number" id="newStock" name="newStock" required />
-
+        <input type="number" id="newStock" required>
         <button type="submit">在庫を更新</button>
     </form>
-
-    <div id="bentoStockList">
-        <h2>現在の在庫一覧</h2>
-        <ul id="bentoStock"></ul>
-    </div>
-
-    <!-- レスポンス表示領域 -->
     <div id="response"></div>
 
     <script>
-        const serverUrl = 'https://688eca87-9817-447e-ac73-bfe4df7d0c85-00-2es7no9v6pfu4.sisko.replit.dev'; // あなたのReplit URLに置き換えてください
+        const serverUrl = 'https://[サーバーのURL]/';
 
-        // 在庫更新処理
         document.getElementById('setStockForm').addEventListener('submit', async (event) => {
             event.preventDefault();
             const bentoName = document.getElementById('bentoName').value;
@@ -75,43 +56,17 @@
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        bentoName: bentoName,
+                        bentoName,
                         newStock: Number(newStock),
                     }),
                 });
 
                 const data = await response.json();
                 document.getElementById('response').textContent = JSON.stringify(data, null, 2);
-                fetchStock(); // 在庫情報を再取得
             } catch (error) {
                 document.getElementById('response').textContent = `エラー: ${error.message}`;
             }
         });
-
-        // 在庫情報の取得と表示
-        async function fetchStock() {
-            const bentoStockElement = document.getElementById('bentoStock');
-            try {
-                const response = await fetch(`${serverUrl}/api/get-status`);
-                if (!response.ok) {
-                    throw new Error(`HTTPエラー: ${response.status}`);
-                }
-
-                const data = await response.json();
-                bentoStockElement.innerHTML = "";
-                data.bentoStock.forEach((bento) => {
-                    const listItem = document.createElement("li");
-                    listItem.textContent = `${bento.bentoName}: ${bento.stock}個`;
-                    bentoStockElement.appendChild(listItem);
-                });
-            } catch (error) {
-                console.error("在庫情報の取得エラー:", error);
-                bentoStockElement.innerHTML = "<li>在庫情報を取得できません。</li>";
-            }
-        }
-
-        // 初期化とデータ取得
-        fetchStock();
     </script>
 </body>
 </html>
